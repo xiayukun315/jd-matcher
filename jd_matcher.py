@@ -7,12 +7,6 @@ import re
 
 # ↓↓↓ 这一块你必须自己改一次：把你简历里真实有的技术，和你目标岗位常要的技术，全加进来 ↓↓↓
 SKILLS = [
-    "python", "java", "c++", "go", "javascript", "typescript",
-    "sql", "mysql", "redis", "linux", "git", "docker", "kubernetes",
-    "spring", "springboot", "mybatis", "django", "flask", "fastapi",
-    "pandas", "numpy", "matplotlib", "pytorch", "tensorflow",
-    "langchain", "llm", "prompt", "rag", "agent", "mcp", "embedding",
-    "html", "css", "vue", "react", "node", "streamlit",
 ]
 
 
@@ -70,11 +64,6 @@ def report(resume, jd):
 if __name__ == "__main__":
     RESUME = """
     计算机科学与技术大二在读。
-    熟悉 Python、Java 基础语法，用 Pandas 做过课程数据分析作业，
-    会用 Git 提交代码，写过 Streamlit 小工具，
-    了解 LLM 的基本概念和调用方式。
-    """
-
     JD = """
     岗位职责：参与 AI 应用开发，负责智能体产品的功能实现。
     任职要求：
