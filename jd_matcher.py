@@ -1,13 +1,56 @@
 """jd-matcher v0.1
 最小闭环：一段简历 + 一段 JD -> 一个匹配分。
 第一版不接 API，纯关键词匹配。跑通比先进重要。
+
+用法：
+  1. 把简历存成 resume.txt，把岗位描述存成 jd.txt（放同目录）
+  2. python jd_matcher.py
+  没有 txt 文件时，会用下面写死的示例内容。
 """
 
+import os
 import re
 
-# ↓↓↓ 这一块你必须自己改一次：把你简历里真实有的技术，和你目标岗位常要的技术，全加进来 ↓↓↓
+# ↓↓↓ 这是「词典」不是「技能表」：目标岗位常见的词都要留着，用于识别 JD 要求的是啥 ↓↓↓
 SKILLS = [
+    # 语言
+    "python", "java", "c", "c++", "sql",
+    # Java 后端
+    "spring", "springboot", "mybatis", "maven", "mysql", "redis",
+    # Python / 数据
+    "pandas", "numpy", "requests", "flask", "fastapi", "streamlit",
+    # AI / Agent
+    "llm", "prompt", "rag", "agent", "mcp", "embedding",
+    "langchain", "openai", "deepseek", "ollama", "transformer",
+    # 工程工具
+    "git", "github", "linux", "docker", "api", "json",
 ]
+
+# ↓↓↓ 简历：只写真做过的。判断标准是「不靠 AI 也能写出 20 行能跑的代码」↓↓↓
+DEFAULT_RESUME = """
+计算机科学与技术大二在读。
+熟悉 Java 基础语法，能写面向对象的小程序，这学期在上 Java 课程。
+Python 能写基础脚本，做过课程的数据处理作业。
+会用 Git 提交代码，了解 GitHub 基本操作。
+"""
+
+# ↓↓↓ JD：贴一段真实的岗位描述，别自己编 ↓↓↓
+DEFAULT_JD = """
+岗位职责：参与 AI 应用开发，负责智能体产品的功能实现。
+任职要求：
+1. 熟悉 Python，掌握 Pandas / Numpy 数据处理；
+2. 了解 LLM、Prompt 工程与 RAG 检索增强；
+3. 熟悉 Git 协作流程；
+4. 有 Agent 项目经验者优先。
+"""
+
+
+def load_text(filename, fallback):
+    """有同名 txt 就读文件，没有就用写死的示例。"""
+    if os.path.exists(filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            return f.read()
+    return fallback
 
 
 def find_skills(text):
@@ -62,15 +105,6 @@ def report(resume, jd):
 
 
 if __name__ == "__main__":
-    RESUME = """
-    计算机科学与技术大二在读。
-    JD = """
-    岗位职责：参与 AI 应用开发，负责智能体产品的功能实现。
-    任职要求：
-    1. 熟悉 Python，掌握 Pandas / Numpy 数据处理；
-    2. 了解 LLM、Prompt 工程与 RAG 检索增强；
-    3. 熟悉 Git 协作流程；
-    4. 有 Agent 项目经验者优先。
-    """
-
-    report(RESUME, JD)
+    resume = load_text("resume.txt", DEFAULT_RESUME)
+    jd = load_text("jd.txt", DEFAULT_JD)
+    report(resume, jd)
