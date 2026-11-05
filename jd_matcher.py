@@ -10,6 +10,7 @@
 
 import os
 import re
+import sys
 
 # ↓↓↓ 这是「词典」不是「技能表」：目标岗位常见的词都要留着，用于识别 JD 要求的是啥 ↓↓↓
 SKILLS = [
@@ -105,6 +106,14 @@ def report(resume, jd):
 
 
 if __name__ == "__main__":
+    # 用法：python jd_matcher.py jd1.txt
+    jd_file = sys.argv[1] if len(sys.argv) > 1 else "jd.txt"
+
+    if not os.path.exists(jd_file):
+        print(f"[提示] 没找到 {jd_file}，先用内置示例跑。")
+    print(f"[简历] resume.txt    [岗位] {jd_file}")
+    print()
+
     resume = load_text("resume.txt", DEFAULT_RESUME)
-    jd = load_text("jd.txt", DEFAULT_JD)
+    jd = load_text(jd_file, DEFAULT_JD)
     report(resume, jd)
