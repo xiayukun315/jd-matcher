@@ -41,3 +41,7 @@ python jd_matcher.py
 
 投实习最耗时间的不是投，是判断投哪个。
 这个工具把「判断」压缩成 30 秒的事。
+
+
+#效果
+<img width="716" height="406" alt="屏幕截图 2026-11-08 113818" src="https://github.com/user-attachments/assets/23196b51-2d5e-4d64-801a-95b22c9b5bf4" />
