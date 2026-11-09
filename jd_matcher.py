@@ -1,11 +1,10 @@
-"""jd-matcher v0.1
+"""jd-matcher v0.2
 最小闭环：一段简历 + 一段 JD -> 一个匹配分。
-第一版不接 API，纯关键词匹配。跑通比先进重要。
+纯关键词匹配，不接 API。
 
-用法：
-  1. 把简历存成 resume.txt，把岗位描述存成 jd.txt（放同目录）
-  2. python jd_matcher.py
-  没有 txt 文件时，会用下面写死的示例内容。
+v0.2 改动：
+  1. 支持中文术语（大模型 / 智能体 / 提示词 ...）—— 中文 JD 不再拿 0 分
+  2. 加置信度提示 —— 识别到的技能词太少时，明说这个分数不可信
 """
 
 import os
@@ -26,6 +25,27 @@ SKILLS = [
     # 工程工具
     "git", "github", "linux", "docker", "api", "json",
 ]
+
+# ↓↓↓ 中文术语 -> 标准词。国内外企用英文，国内公司用中文，两边都得认 ↓↓↓
+ALIASES = {
+    "大模型": "llm",
+    "语言模型": "llm",
+    "机器学习": "ml",
+    "深度学习": "dl",
+    "智能体": "agent",
+    "代理": "agent",
+    "提示词": "prompt",
+    "提示工程": "prompt",
+    "检索增强": "rag",
+    "知识库": "rag",
+    "向量": "embedding",
+    "微调": "finetune",
+    "数据库": "sql",
+    "接口": "api",
+    "后端": "backend",
+    "爬虫": "spider",
+    "数据分析": "pandas",
+}
 
 # ↓↓↓ 简历：只写真做过的。判断标准是「不靠 AI 也能写出 20 行能跑的代码」↓↓↓
 DEFAULT_RESUME = """
@@ -54,9 +74,21 @@ def load_text(filename, fallback):
     return fallback
 
 
+def normalize(text):
+    """把中文术语补上对应的英文标准词，让后面的扫描两边都能认。"""
+    t = text.lower()
+    extra = []
+    for cn, std in ALIASES.items():
+        if cn in t:
+            extra.append(std)
+    if extra:
+        t = t + " " + " ".join(extra)
+    return t
+
+
 def find_skills(text):
     """从一段文字里找出出现过的技能词。用词边界，避免 react 里的 c 被当成 C 语言。"""
-    low = text.lower()
+    low = normalize(text)
     found = set()
     for s in SKILLS:
         pattern = r"(?<![a-z0-9])" + re.escape(s) + r"(?![a-z0-9+#])"
@@ -80,12 +112,23 @@ def match(resume, jd):
 
 def report(resume, jd):
     score, hit, miss = match(resume, jd)
+    total = len(hit) + len(miss)
 
     print("=" * 46)
     print(f"  匹配分：{score} / 100")
     print("=" * 46)
     print(f"命中 {len(hit)} 项：" + ("、".join(hit) if hit else "无"))
     print(f"差距 {len(miss)} 项：" + ("、".join(miss) if miss else "无"))
+    print(f"识别到 {total} 个技能词")
+
+    # 样本太小的时候，分数没有意义。这一点必须让使用者看到。
+    if total < 3:
+        print()
+        print(f"[不可信] 只识别到 {total} 个技能词。")
+        print("         这个分数只说明「我认得的词里你占了几个」，不代表你真的匹配。")
+        print("         JD 太笼统，或者词表还缺词。这类岗位要人工判断，别信这个数。")
+        print()
+        return
 
     if miss:
         print()
