@@ -43,7 +43,22 @@ python jd_matcher.py
 这个工具把「判断」压缩成 30 秒的事。
 
 
+
 ## 效果
 
+<img width="716" height="406" alt="界面截图" src="https://github.com/user-attachments/assets/23196b51-2d5e-4d64-801a-95b22c9b5bf4" />
 
-<img width="716" height="406" alt="屏幕截图 2026-11-08 113818" src="https://github.com/user-attachments/assets/23196b51-2d5e-4d64-801a-95b22c9b5bf4" />
+输入简历 + JD，输出匹配分、命中项与差距项。
+v0.2 会提示「识别词太少，分数不可信」——因为关键词匹配在样本小时会给假分数。
+
+## 怎么跑
+
+```bash
+# 1. 把简历存成 resume.txt，岗位描述存成 jd.txt
+# 2. 命令行版
+python jd_matcher.py jd.txt
+
+# 3. 界面版
+pip install streamlit
+python -m streamlit run app.py
+
